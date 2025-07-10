@@ -11,7 +11,7 @@ connectDB();
 const PORT = process.env.PORT || 3000;
 const app = fastify();
 
-app.register(cors)
+app.register(cors);
 app.register(fastifyJwt, { secret: process.env.JWT_SECRET || 'secret123$%^&*()' });
 app.register(userRoutes, { prefix: '/api/v1/users' });
 app.decorate('authenticate', async (request, reply) => {
