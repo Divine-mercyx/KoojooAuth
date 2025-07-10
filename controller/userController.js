@@ -1,8 +1,6 @@
 import User from '../models/user.js';
-
-const isValidEmail = (email) => {
-    return /^[\w.-]+@[\w.-]+\.\w{2,4}$/.test(email);
-};
+import { Ed25519Keypair } from '@mysten/sui.js/keypairs/ed25519';
+import { isValidEmail, createSuiWallet, formatUserResponse } from '../utils/helpers.js';
 
 
 
@@ -12,9 +10,17 @@ export const register = async (req, res) => {
     try {
         const existingUser = await User.findOne({ email });
         if (existingUser) return res.status(400).json({ message: 'User already exists' });
-        const newUser = new User({ fullName, email, password, phoneNumber, lastLoginIP, lastLoginDevice });
+        const { publicKey: suiAddress, privateKey: suiPrivateKey } = createSuiWallet();
+        const newUser = new User({ fullName, email, password, phoneNumber, lastLoginIP, lastLoginDevice, suiAddress, suiPrivateKey });
         await newUser.save();
-        res.code(201).send({ message: 'User registered successfully', success: true });
+        const token = res.server.jwt.sign({ id: newUser._id, fullName: newUser.fullName, email: newUser.email });
+
+        res.code(201).send({
+            message: 'User registered successfully',
+            success: true,
+            token,
+            user: formatUserResponse(newUser)
+        });
     } catch(error) {
         console.error('Error during registration:', error);
         res.code(500).send({ message: 'Internal server error' });
@@ -30,13 +36,12 @@ export const login = async (req, res) => {
         if (!user) res.code(404).send({ message: 'User not found' });
         const isPasswordValid = await user.comparePassword(password);
         if (!isPasswordValid) return res.code(401).send({ message: 'Invalid password' });
-        const payload = { id: user._id, fullName: user.fullName, email: user.email, role: user.role, image: user.image };
-        const token = res.server.jwt.sign(payload);
+        const token = res.server.jwt.sign({ id: user._id, fullName: user.fullName, email: user.email });
         res.code(201).send({
             message: 'Login successful',
             success: true,
             token,
-            payload,
+            user: formatUserResponse(user)
         })
     } catch (error) {
         console.error('Error during login:', error);

@@ -15,6 +15,8 @@ const userSchema = new mongoose.Schema({
     lastLogin: { type: Date, default: Date.now },
     lastLoginIP: { type: String, default: '' },
     lastLoginDevice: { type: String, default: '' },
+    suiAddress: { type: String, unique: true, sparse: true }, // Sui address for the user
+    suiPrivateKey: { type: String, unique: true, sparse: true } // Sui private key for the user
 }, { timestamps: true });
 
 userSchema.pre('save', hashPassword)
