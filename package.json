@@ -1,0 +1,23 @@
+{
+  "name": "koojooauth",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.0",
+    "fastify": "^5.4.0",
+    "fastify-jwt": "^4.1.3",
+    "mongoose": "^8.16.2",
+    "nodemon": "^3.1.10"
+  }
+}
