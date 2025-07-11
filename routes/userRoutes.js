@@ -1,4 +1,4 @@
-import {promoteToTreasurer} from "../controller/userController.js";
+import {deleteAccount, promoteToTreasurer} from "../controller/userController.js";
 import {authenticate} from "../middlewares/auth.js";
 
 export default async function userRoutes(fastify, options) {
@@ -6,4 +6,8 @@ export default async function userRoutes(fastify, options) {
         preValidation: authenticate,
         handler: promoteToTreasurer
     });
+    fastify.delete('/delete-account', {
+        preValidation: authenticate,
+        handler: deleteAccount
+    })
 }

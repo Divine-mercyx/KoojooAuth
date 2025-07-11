@@ -62,3 +62,15 @@ export const promoteToTreasurer = async (req, res) => {
         res.code(500).send({ message: 'Internal server error' });
     }
 }
+
+export const deleteAccount = async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id);
+        if (!user) return res.code(404).send({ message: 'User not found' });
+        await User.deleteOne({ _id: user._id });
+        res.send({ message: 'Account deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting account:', error);
+        res.code(500).send({ message: 'Internal server error' });
+    }
+}
