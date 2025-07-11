@@ -1,12 +1,11 @@
 import User from '../models/user.js';
-import { Ed25519Keypair } from '@mysten/sui.js/keypairs/ed25519';
-import { isValidEmail, createSuiWallet, formatUserResponse } from '../utils/helpers.js';
-
-
+import { isValidEmail, createSuiWallet, formatUserResponse, isValidPasswordFullNameAndPhoneNumber } from '../utils/helpers.js';
+import {Roles} from "../roles/roles.js";
 
 export const register = async (req, res) => {
     const { fullName, email, password, phoneNumber, lastLoginIP, lastLoginDevice  } = req.body;
     if (!isValidEmail(email)) return res.code(400).send({ message: 'Invalid email format' });
+    if (!isValidPasswordFullNameAndPhoneNumber(password, fullName, phoneNumber)) return res.code(400).send({ message: 'Invalid details, make sure all details are entered correctly' });
     try {
         const existingUser = await User.findOne({ email });
         if (existingUser) return res.status(400).json({ message: 'User already exists' });
@@ -45,6 +44,22 @@ export const login = async (req, res) => {
         })
     } catch (error) {
         console.error('Error during login:', error);
+        res.code(500).send({ message: 'Internal server error' });
+    }
+}
+
+
+export const promoteToTreasurer = async (req, res) => {
+    const { userId } = req.params;
+    try {
+        const user = await User.findById(userId);
+        if (!user) return res.code(404).send({ message: 'User not found' });
+        if (user.role === Roles.TREASURER) return res.code(400).send({ message: 'User is already a treasurer' });
+        user.role = Roles.TREASURER;
+        await user.save();
+        res.send({ message: 'User promoted to treasurer successfully', user: formatUserResponse(user) });
+    } catch (error) {
+        console.error('Error promoting user to treasurer:', error);
         res.code(500).send({ message: 'Internal server error' });
     }
 }
