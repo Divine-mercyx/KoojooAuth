@@ -1,4 +1,9 @@
-import {deleteAccount, promoteToTreasurer} from "../controller/userController.js";
+import {
+    deleteAccount,
+    getUserTrustScore,
+    getUserValidationToJoinGroup,
+    promoteToTreasurer
+} from "../controller/userController.js";
 import {authenticate} from "../middlewares/auth.js";
 
 export default async function userRoutes(fastify, options) {
@@ -9,5 +14,13 @@ export default async function userRoutes(fastify, options) {
     fastify.delete('/delete-account', {
         preValidation: authenticate,
         handler: deleteAccount
+    })
+    fastify.get('/get-trust-score', {
+        preValidation: authenticate,
+        handler: getUserTrustScore
+    });
+    fastify.get('/user-validity', {
+        preValidation: authenticate,
+        handler: getUserValidationToJoinGroup
     })
 }

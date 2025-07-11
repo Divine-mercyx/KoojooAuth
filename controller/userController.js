@@ -74,3 +74,28 @@ export const deleteAccount = async (req, res) => {
         res.code(500).send({ message: 'Internal server error' });
     }
 }
+
+export const getUserTrustScore = async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id);
+        if (!user) return res.code(404).send({ message: 'User not found' });
+        res.send({ overAllTrustScore: user.overAllTrustScore });
+    } catch (error) {
+        console.error('Error fetching user trust score:', error);
+        res.code(500).send({ message: 'Internal server error' });
+    }
+}
+
+export const getUserValidationToJoinGroup = async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id);
+        if (!user) return res.code(404).send({ message: 'User not found' });
+        if (user.isVerified && user.isActive && user.overAllTrustScore >= 50) {
+            return res.send({ canJoinGroup: true, message: 'User is eligible to join groups' });
+        }
+        res.send({ canJoinGroup: false, message: 'User is not eligible to join groups' });
+    } catch (error) {
+        console.error('Error checking user eligibility for group:', error);
+        res.code(500).send({ message: 'Internal server error' });
+    }
+}
