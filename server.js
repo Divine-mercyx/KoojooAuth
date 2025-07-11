@@ -2,9 +2,10 @@ import fastify from 'fastify';
 import dotenv from 'dotenv';
 import fastifyJwt from 'fastify-jwt';
 import { connectDB } from './config/db.js';
-import userRoutes from "./routes/userRoutes.js";
 import cors from '@fastify/cors';
 import {authenticate} from "./middlewares/auth.js";
+import authRoutes from './routes/authRoutes.js';
+import userRoutes from "./routes/userRoutes.js";
 
 
 dotenv.config();
@@ -14,6 +15,7 @@ const app = fastify();
 
 app.register(cors);
 app.register(fastifyJwt, { secret: process.env.JWT_SECRET || 'secret123$%^&*()' });
+app.register(authRoutes, { prefix: '/api/v1/auth' });
 app.register(userRoutes, { prefix: '/api/v1/users' });
 
 app.get('/secure', { preValidation: authenticate }, async (req, reply) => {

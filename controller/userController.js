@@ -50,9 +50,8 @@ export const login = async (req, res) => {
 
 
 export const promoteToTreasurer = async (req, res) => {
-    const { userId } = req.params;
     try {
-        const user = await User.findById(userId);
+        const user = await User.findById(req.user.id);
         if (!user) return res.code(404).send({ message: 'User not found' });
         if (user.role === Roles.TREASURER) return res.code(400).send({ message: 'User is already a treasurer' });
         user.role = Roles.TREASURER;

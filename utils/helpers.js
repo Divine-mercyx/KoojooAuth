@@ -31,5 +31,6 @@ export const formatUserResponse = (user) => ({
     phoneNumber: user.phoneNumber,
     lastLoginIP: user.lastLoginIP,
     lastLoginDevice: user.lastLoginDevice,
-    suiAddress: user.suiAddress
+    suiAddress: user.suiAddress,
+    role: user.role,
 });

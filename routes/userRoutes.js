@@ -1,6 +1,9 @@
-import {login, register} from "../controller/userController.js";
+import {promoteToTreasurer} from "../controller/userController.js";
+import {authenticate} from "../middlewares/auth.js";
 
 export default async function userRoutes(fastify, options) {
-    fastify.post('/register', register);
-    fastify.post('/login', login);
+    fastify.put('/promote-to-treasurer', {
+        preValidation: authenticate,
+        handler: promoteToTreasurer
+    });
 }
