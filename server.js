@@ -1,11 +1,12 @@
 import fastify from 'fastify';
 import dotenv from 'dotenv';
 import fastifyJwt from 'fastify-jwt';
-import { connectDB } from './config/db.js';
+import { connectDB } from './user/config/db.js';
 import cors from '@fastify/cors';
-import {authenticate} from "./middlewares/auth.js";
-import authRoutes from './routes/authRoutes.js';
-import userRoutes from "./routes/userRoutes.js";
+import {authenticate} from "./user/middlewares/auth.js";
+import authRoutes from './user/routes/authRoutes.js';
+import userRoutes from "./user/routes/userRoutes.js";
+import stakeRoutes from "./userInvestments/routes/stakeRoutes.js";
 
 
 dotenv.config();
@@ -17,6 +18,7 @@ app.register(cors);
 app.register(fastifyJwt, { secret: process.env.JWT_SECRET || 'secret123$%^&*()' });
 app.register(authRoutes, { prefix: '/api/v1/auth' });
 app.register(userRoutes, { prefix: '/api/v1/users' });
+app.register(stakeRoutes, { prefix: 'api/v1/investments' })
 
 app.get('/secure', { preValidation: authenticate }, async (req, reply) => {
     reply.send({ user: req.user });
